@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>My Exams</title>
+    <style>
+        body { font-family: Arial; background: #f2f2f2; margin: 0; padding: 0; }
+
+        .header {
+            background: green;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .container {
+            width: 80%;
+            margin: 30px auto;
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px gray;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            background: green;
+            color: white;
+            padding: 12px;
+        }
+
+        td {
+            padding: 10px;
+            text-align: center;
+            border-bottom: 1px solid #ddd;
+        }
+
+        tr:hover { background: #d5f5e3; }
+
+        .no-data {
+            text-align: center;
+            color: gray;
+            padding: 20px;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-top: 20px;
+            color: green;
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        .back-link:hover { text-decoration: underline; }
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <h1>Exam Schedule</h1>
+</div>
+
+<div class="container">
+    <table>
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>Subject Name</th>
+            <th>Exam Date</th>
+            <th>Exam Time</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="e : ${exams}">
+            <td th:text="${e.id}"></td>
+            <td th:text="${e.subjectName}"></td>
+            <td th:text="${e.examDate}"></td>
+            <td th:text="${e.examTime}"></td>
+        </tr>
+        <tr th:if="${#lists.isEmpty(exams)}">
+            <td colspan="4" class="no-data">No exams found!</td>
+        </tr>
+        </tbody>
+    </table>
+
+    <a class="back-link" href="/studentdashboard">← Back to Dashboard</a>
+</div>
+
+</body>
+</html>

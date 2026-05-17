@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Exams</title>
+    <style>
+        body { font-family: Arial; background:#0f172a; color:white; padding:20px; }
+        .top-bar { margin-bottom:20px; }
+        button { padding:10px 20px; margin-right:10px; border:none; border-radius:5px; cursor:pointer; }
+        input { padding:10px; margin:5px; }
+        table { width:100%; border-collapse:collapse; margin-top:20px; }
+        table, th, td { border:1px solid white; }
+        th, td { padding:10px; text-align:center; }
+        .edit-input { padding:6px; width:130px; background:#1e293b; color:white; border:1px solid #60a5fa; border-radius:4px; }
+        .error { background:#7f1d1d; color:#fca5a5; padding:10px 16px; border-radius:6px; margin-bottom:15px; font-size:14px; }
+    </style>
+</head>
+<body>
+
+<h1>Exams Management</h1>
+
+<div class="error" th:if="${error}" th:text="${error}"></div>
+
+<div class="top-bar">
+    <input type="text" id="searchInput" placeholder="Search..." onkeyup="searchTable()" />
+</div>
+
+<form th:action="@{/exams/add}" method="post">
+    <input type="text" name="subjectName" placeholsarder="Subject Name" required>
+    <input type="date" name="examDate" required>
+    <input type="time" name="examTime" required>
+    <button type="submit">Save Exam</button>
+</form>
+
+<table id="examTable">
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>Subject Name</th>
+        <th>Exam Date</th>
+        <th>Exam Time</th>
+        <th>Actions</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="e : ${exams}">
+
+        <th:block th:if="${e.id != editExam?.id}">
+            <td th:text="${e.id}"></td>
+            <td th:text="${e.subjectName}"></td>
+            <td th:text="${e.examDate}"></td>
+            <td th:text="${e.examTime}"></td>
+            <td>
+                <a th:href="@{/exams/edit/{id}(id=${e.id})}">
+                    <button>Edit</button>
+                </a>
+                <a th:href="@{/exams/delete/{id}(id=${e.id})}"
+                   onclick="return confirm('Delete?')">
+                    <button>Delete</button>
+                </a>
+            </td>
+        </th:block>
+
+        <th:block th:if="${e.id == editExam?.id}">
+            <td th:text="${e.id}"></td>
+            <td><input class="edit-input" type="text" name="subjectName" th:value="${e.subjectName}" form="editForm" required /></td>
+            <td><input class="edit-input" type="date" name="examDate" th:value="${e.examDate}" form="editForm" required /></td>
+            <td><input class="edit-input" type="time" name="examTime" th:value="${e.examTime}" form="editForm" required /></td>
+            <td>
+                <button type="submit" form="editForm">Update</button>
+                <a th:href="@{/exams}"><button type="button">Cancel</button></a>
+            </td>
+        </th:block>
+
+    </tr>
+    </tbody>
+</table>
+
+<form id="editForm"
+      th:action="@{/exams/update}"
+      method="post"
+      th:if="${editExam != null}">
+    <input type="hidden" name="id" th:value="${editExam?.id}" />
+</form>
+
+<script>
+    function searchTable() {
+        const input = document.getElementById('searchInput').value.toLowerCase();
+        const rows = document.querySelectorAll('#examTable tbody tr');
+        rows.forEach(row => {
+            row.style.display = row.innerText.toLowerCase().includes(input) ? '' : 'none';
+        });
+    }
+</script>
+
+</body>
+</html>

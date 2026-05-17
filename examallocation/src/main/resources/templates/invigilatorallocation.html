@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+
+    <title>Invigilator Allocation</title>
+
+    <style>
+
+        body{
+            font-family: Arial;
+            background:#0f172a;
+            color:white;
+            padding:20px;
+        }
+
+        h1{
+            color:#60a5fa;
+            margin-bottom:20px;
+        }
+
+        .top-bar{
+            margin-bottom:20px;
+            display:flex;
+            gap:10px;
+            flex-wrap:wrap;
+        }
+
+        input{
+            padding:10px;
+            margin:5px;
+            border:none;
+            border-radius:5px;
+            background:#1e293b;
+            color:white;
+        }
+
+        button{
+            padding:10px 18px;
+            border:none;
+            border-radius:5px;
+            cursor:pointer;
+            font-weight:bold;
+        }
+
+        .save-btn{
+            background:#2563eb;
+            color:white;
+        }
+
+        .generate-btn{
+            background:#16a34a;
+            color:white;
+        }
+
+        .edit-btn{
+            background:#f59e0b;
+            color:white;
+        }
+
+        .delete-btn{
+            background:#dc2626;
+            color:white;
+        }
+
+        .cancel-btn{
+            background:gray;
+            color:white;
+        }
+
+        table{
+            width:100%;
+            border-collapse:collapse;
+            margin-top:20px;
+            background:#1e293b;
+        }
+
+        table, th, td{
+            border:1px solid #334155;
+        }
+
+        th{
+            background:#2563eb;
+            color:white;
+        }
+
+        th, td{
+            padding:12px;
+            text-align:center;
+        }
+
+        tr:hover{
+            background:#334155;
+        }
+
+        .edit-input{
+            width:120px;
+            padding:6px;
+            background:#0f172a;
+            color:white;
+            border:1px solid #60a5fa;
+            border-radius:4px;
+        }
+
+        .error{
+            background:#7f1d1d;
+            color:#fecaca;
+            padding:10px 16px;
+            border-radius:6px;
+            margin-bottom:15px;
+        }
+
+        .success{
+            background:#14532d;
+            color:#bbf7d0;
+            padding:10px 16px;
+            border-radius:6px;
+            margin-bottom:15px;
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+<h1>Invigilator Allocation Management</h1>
+
+<!-- ERROR -->
+
+<div class="error"
+     th:if="${error}"
+     th:text="${error}">
+</div>
+
+<!-- SUCCESS -->
+
+<div class="success"
+     th:if="${success}"
+     th:text="${success}">
+</div>
+
+<!-- TOP BAR -->
+
+<div class="top-bar">
+
+    <input type="text"
+           id="searchInput"
+           placeholder="Search..."
+           onkeyup="searchTable()" />
+
+    <!-- AUTOMATIC GENERATE BUTTON -->
+
+    <a th:href="@{/invigilatorallocation/generate}">
+
+        <button class="generate-btn">
+
+            Generate Automatic Invigilators
+
+        </button>
+
+    </a>
+
+</div>
+
+<!-- ADD FORM -->
+
+<form th:action="@{/invigilatorallocation/add}"
+      method="post">
+
+    <input type="number"
+           name="facultyId"
+           placeholder="Faculty ID"
+           required>
+
+    <input type="number"
+           name="hallId"
+           placeholder="Hall ID"
+           required>
+
+    <input type="text"
+           name="facultyName"
+           placeholder="Faculty Name"
+           required>
+
+    <input type="date"
+           name="dutyDate"
+           required>
+
+    <button type="submit"
+            class="save-btn">
+
+        Save
+
+    </button>
+
+</form>
+
+<!-- TABLE -->
+
+<table id="invigilatorTable">
+
+    <thead>
+
+    <tr>
+
+        <th>ID</th>
+        <th>Faculty ID</th>
+        <th>Hall ID</th>
+        <th>Faculty Name</th>
+        <th>Duty Date</th>
+        <th>Actions</th>
+
+    </tr>
+
+    </thead>
+
+    <tbody>
+
+    <tr th:each="i : ${invigilators}">
+
+        <!-- NORMAL ROW -->
+
+        <th:block th:if="${i.id != editInvigilator?.id}">
+
+            <td th:text="${i.id}"></td>
+
+            <td th:text="${i.facultyId}"></td>
+
+            <td th:text="${i.hallId}"></td>
+
+            <td th:text="${i.facultyName}"></td>
+
+            <td th:text="${i.dutyDate}"></td>
+
+            <td>
+
+                <!-- EDIT -->
+
+                <a th:href="@{/invigilatorallocation/edit/{id}(id=${i.id})}">
+
+                    <button type="button"
+                            class="edit-btn">
+
+                        Edit
+
+                    </button>
+
+                </a>
+
+                <!-- DELETE -->
+
+                <a th:href="@{/invigilatorallocation/delete/{id}(id=${i.id})}"
+                   onclick="return confirm('Delete this allocation?')">
+
+                    <button type="button"
+                            class="delete-btn">
+
+                        Delete
+
+                    </button>
+
+                </a>
+
+            </td>
+
+        </th:block>
+
+        <!-- EDIT ROW -->
+
+        <th:block th:if="${i.id == editInvigilator?.id}">
+
+            <td th:text="${i.id}"></td>
+
+            <td>
+
+                <input class="edit-input"
+                       type="number"
+                       name="facultyId"
+                       th:value="${i.facultyId}"
+                       form="editForm"
+                       required />
+
+            </td>
+
+            <td>
+
+                <input class="edit-input"
+                       type="number"
+                       name="hallId"
+                       th:value="${i.hallId}"
+                       form="editForm"
+                       required />
+
+            </td>
+
+            <td>
+
+                <input class="edit-input"
+                       type="text"
+                       name="facultyName"
+                       th:value="${i.facultyName}"
+                       form="editForm"
+                       required />
+
+            </td>
+
+            <td>
+
+                <input class="edit-input"
+                       type="date"
+                       name="dutyDate"
+                       th:value="${i.dutyDate}"
+                       form="editForm"
+                       required />
+
+            </td>
+
+            <td>
+
+                <button type="submit"
+                        form="editForm"
+                        class="save-btn">
+
+                    Update
+
+                </button>
+
+                <a th:href="@{/invigilatorallocation}">
+
+                    <button type="button"
+                            class="cancel-btn">
+
+                        Cancel
+
+                    </button>
+
+                </a>
+
+            </td>
+
+        </th:block>
+
+    </tr>
+
+    </tbody>
+
+</table>
+
+<!-- EDIT FORM -->
+
+<form id="editForm"
+      th:action="@{/invigilatorallocation/update}"
+      method="post"
+      th:if="${editInvigilator != null}">
+
+    <input type="hidden"
+           name="id"
+           th:value="${editInvigilator.id}" />
+
+</form>
+
+<!-- SEARCH -->
+
+<script>
+
+    function searchTable() {
+
+        const input =
+            document.getElementById('searchInput')
+                    .value
+                    .toLowerCase();
+
+        const rows =
+            document.querySelectorAll(
+                '#invigilatorTable tbody tr');
+
+        rows.forEach(row => {
+
+            row.style.display =
+                row.innerText.toLowerCase()
+                    .includes(input)
+                    ? ''
+                    : 'none';
+
+        });
+    }
+
+</script>
+
+</body>
+</html>

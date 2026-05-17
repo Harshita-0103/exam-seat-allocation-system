@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+
+    <title>Students Management</title>
+
+    <style>
+
+        body{
+            font-family: Arial;
+            background:#0f172a;
+            color:white;
+            padding:20px;
+        }
+
+        h1{
+            color:#60a5fa;
+            margin-bottom:20px;
+        }
+
+        .top-bar{
+            margin-bottom:20px;
+            display:flex;
+            gap:10px;
+            flex-wrap:wrap;
+        }
+
+        input{
+            padding:10px;
+            margin:5px;
+            border:none;
+            border-radius:5px;
+            background:#1e293b;
+            color:white;
+        }
+
+        button{
+            padding:10px 18px;
+            border:none;
+            border-radius:5px;
+            cursor:pointer;
+            font-weight:bold;
+        }
+
+        .save-btn{ background:#2563eb; color:white; }
+        .edit-btn{ background:#f59e0b; color:white; }
+        .delete-btn{ background:#dc2626; color:white; }
+        .cancel-btn{ background:gray; color:white; }
+
+        table{
+            width:100%;
+            border-collapse:collapse;
+            margin-top:20px;
+            background:#1e293b;
+        }
+
+        table, th, td{ border:1px solid #334155; }
+
+        th{
+            background:#2563eb;
+            color:white;
+        }
+
+        th, td{
+            padding:12px;
+            text-align:center;
+        }
+
+        tr:hover{ background:#334155; }
+
+        .edit-input{
+            width:120px;
+            padding:6px;
+            background:#0f172a;
+            color:white;
+            border:1px solid #60a5fa;
+            border-radius:4px;
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+<h1>Students Management</h1>
+
+<div class="top-bar">
+    <input type="text"
+           id="searchInput"
+           placeholder="Search Student..."
+           onkeyup="searchTable()" />
+</div>
+
+<!-- ADD FORM -->
+<form th:action="@{/students/add}" method="post">
+
+    <input type="text" name="hallTicket" placeholder="Hall Ticket" required>
+    <input type="text" name="name" placeholder="Student Name" required>
+    <input type="text" name="branch" placeholder="Branch" required>
+    <input type="number" name="year" placeholder="Year" required>
+
+    <button type="submit" class="save-btn">Save</button>
+
+</form>
+
+<!-- STUDENTS TABLE -->
+<table id="studentTable">
+
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>Hall Ticket</th>
+        <th>Name</th>
+        <th>Branch</th>
+        <th>Year</th>
+        <th>Actions</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    <tr th:each="s : ${students}">
+
+        <!-- NORMAL ROW -->
+        <th:block th:if="${s.id != editStudent?.id}">
+            <td th:text="${s.id}"></td>
+            <td th:text="${s.hallTicket}"></td>
+            <td th:text="${s.name}"></td>
+            <td th:text="${s.branch}"></td>
+            <td th:text="${s.year}"></td>
+            <td>
+                <a th:href="@{/students/edit/{id}(id=${s.id})}">
+                    <button type="button" class="edit-btn">Edit</button>
+                </a>
+                <a th:href="@{/students/delete/{id}(id=${s.id})}"
+                   onclick="return confirm('Delete student?')">
+                    <button type="button" class="delete-btn">Delete</button>
+                </a>
+            </td>
+        </th:block>
+
+        <!-- EDIT ROW -->
+        <th:block th:if="${s.id == editStudent?.id}">
+            <td th:text="${s.id}"></td>
+            <td><input class="edit-input" type="text" name="hallTicket" th:value="${s.hallTicket}" form="editForm" required /></td>
+            <td><input class="edit-input" type="text" name="name" th:value="${s.name}" form="editForm" required /></td>
+            <td><input class="edit-input" type="text" name="branch" th:value="${s.branch}" form="editForm" required /></td>
+            <td><input class="edit-input" type="number" name="year" th:value="${s.year}" form="editForm" required /></td>
+            <td>
+                <input class="edit-input"
+                       type="password"
+                       name="password"
+                       placeholder="New Password"
+                       form="editForm" />
+                <button type="submit" form="editForm" class="save-btn">Update</button>
+                <a th:href="@{/students}">
+                    <button type="button" class="cancel-btn">Cancel</button>
+                </a>
+            </td>
+        </th:block>
+
+    </tr>
+    </tbody>
+
+</table>
+
+<!-- EDIT FORM -->
+<form id="editForm"
+      th:action="@{/students/update}"
+      method="post"
+      th:if="${editStudent != null}">
+    <input type="hidden" name="id" th:value="${editStudent.id}" />
+    <input type="hidden" name="password" th:value="${editStudent.password}" /></form>
+
+<script>
+    function searchTable() {
+        const input = document.getElementById('searchInput').value.toLowerCase();
+        const rows = document.querySelectorAll('#studentTable tbody tr');
+        rows.forEach(row => {
+            row.style.display = row.innerText.toLowerCase().includes(input) ? '' : 'none';
+        });
+    }
+</script>
+
+</body>
+</html>

@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<html>
+<head>
+
+    <title>Exam Allocation System</title>
+
+    <style>
+
+        body{
+
+            margin:0;
+            padding:0;
+
+            font-family:Arial;
+
+            /* LOCAL IMAGE */
+            background-image:url('/images/9jn5a.jpg');
+
+            background-size:cover;
+            background-position:center;
+            height:100vh;
+
+            display:flex;
+            justify-content:center;
+            align-items:center;
+        }
+
+        .container{
+
+            width:900px;
+
+            display:flex;
+            justify-content:space-around;
+        }
+
+        .login-box{
+
+            width:350px;
+
+            background:rgba(255,255,255,0.9);
+
+            padding:30px;
+
+            border-radius:10px;
+
+            box-shadow:0px 0px 10px gray;
+        }
+
+        h2{
+
+            text-align:center;
+            margin-bottom:30px;
+        }
+
+        table{
+
+            width:100%;
+        }
+
+        td{
+
+            padding:10px;
+        }
+
+        input{
+
+            width:100%;
+            padding:10px;
+        }
+
+        button{
+
+            width:100%;
+            padding:12px;
+
+            background:blue;
+            color:white;
+
+            border:none;
+
+            font-size:16px;
+
+            cursor:pointer;
+        }
+
+        button:hover{
+
+            background:darkblue;
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+    <!-- ADMIN LOGIN -->
+
+    <div class="login-box">
+
+        <h2>ADMIN LOGIN</h2>
+
+        <form action="/adminLogin" method="post" >
+
+            <table>
+
+                <tr>
+
+                    <td>Username</td>
+
+                    <td>
+                        <input type="text" name="username">
+                    </td>
+
+                </tr>
+
+                <tr>
+
+                    <td>Password</td>
+
+                    <td>
+                        <input type="password" name="password">
+                    </td>
+
+                </tr>
+
+                <tr>
+
+                    <td colspan="2">
+
+                        <button type="submit">
+                            Login
+                        </button>
+
+                    </td>
+
+                </tr>
+
+            </table>
+
+        </form>
+
+    </div>
+
+
+
+
+
+    <!-- STUDENT LOGIN -->
+
+    <div class="login-box">
+
+        <h2>STUDENT LOGIN</h2>
+
+        <form action="/studentLogin" method="post">
+
+            <table>
+
+                <tr>
+
+                    <td>Hall Ticket</td>
+
+                    <td>
+                        <input type="text" name="hallTicket">
+                    </td>
+
+                </tr>
+
+                <tr>
+
+                    <td>Password</td>
+
+                    <td>
+                        <input type="password" name="password">
+                    </td>
+
+                </tr>
+
+                <tr>
+
+                    <td colspan="2">
+
+                        <button type="submit">
+                            Login
+                        </button>
+
+                    </td>
+
+                </tr>
+
+            </table>
+
+        </form>
+
+    </div>
+
+</div>
+
+</body>
+</html>

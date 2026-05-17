@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Seat Allocation</title>
+
+    <style>
+
+        body{
+            font-family: Arial;
+            background:#0f172a;
+            color:white;
+            padding:20px;
+        }
+
+        h1{
+            margin-bottom:20px;
+            color:#60a5fa;
+        }
+
+        .top-bar{
+            margin-bottom:20px;
+            display:flex;
+            gap:10px;
+            flex-wrap:wrap;
+        }
+
+        input{
+            padding:10px;
+            margin:5px;
+            border:none;
+            border-radius:5px;
+            background:#1e293b;
+            color:white;
+        }
+
+        button{
+            padding:10px 18px;
+            border:none;
+            border-radius:5px;
+            cursor:pointer;
+            font-weight:bold;
+        }
+
+        .save-btn{
+            background:#2563eb;
+            color:white;
+        }
+
+        .generate-btn{
+            background:#16a34a;
+            color:white;
+        }
+
+        .edit-btn{
+            background:#f59e0b;
+            color:white;
+        }
+
+        .delete-btn{
+            background:#dc2626;
+            color:white;
+        }
+
+        .cancel-btn{
+            background:gray;
+            color:white;
+        }
+
+        table{
+            width:100%;
+            border-collapse:collapse;
+            margin-top:20px;
+            background:#1e293b;
+        }
+
+        table, th, td{
+            border:1px solid #334155;
+        }
+
+        th{
+            background:#2563eb;
+            color:white;
+        }
+
+        th, td{
+            padding:12px;
+            text-align:center;
+        }
+
+        tr:hover{
+            background:#334155;
+        }
+
+        .edit-input{
+            width:120px;
+            padding:6px;
+            background:#0f172a;
+            color:white;
+            border:1px solid #60a5fa;
+            border-radius:4px;
+        }
+
+        .error{
+            background:#7f1d1d;
+            color:#fecaca;
+            padding:10px 16px;
+            border-radius:6px;
+            margin-bottom:15px;
+        }
+
+        .success{
+            background:#14532d;
+            color:#bbf7d0;
+            padding:10px 16px;
+            border-radius:6px;
+            margin-bottom:15px;
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+<h1>Seat Allocation Management</h1>
+
+<div class="error"
+     th:if="${error}"
+     th:text="${error}">
+</div>
+
+<div class="success"
+     th:if="${success}"
+     th:text="${success}">
+</div>
+
+<div class="top-bar">
+
+    <input type="text"
+           id="searchInput"
+           placeholder="Search..."
+           onkeyup="searchTable()" />
+
+    <a th:href="@{/seat-allocation/generate}">
+        <button class="generate-btn">
+            Generate Automatic Allocation
+        </button>
+    </a>
+
+</div>
+
+<!-- ADD FORM -->
+
+<form th:action="@{/seat-allocation/add}"
+      method="post">
+
+    <input type="text"
+           name="studentName"
+           placeholder="Student Name"
+           required>
+
+    <input type="text"
+           name="hallName"
+           placeholder="Hall Name"
+           required>
+
+    <input type="number"
+           name="seatNumber"
+           placeholder="Seat Number"
+           required>
+
+    <input type="text"
+           name="examName"
+           placeholder="Exam Name"
+           required>
+
+    <button type="submit"
+            class="save-btn">
+
+        Save
+
+    </button>
+
+</form>
+
+<!-- TABLE -->
+
+<table id="allocationTable">
+
+    <thead>
+
+    <tr>
+
+        <th>ID</th>
+        <th>Student Name</th>
+        <th>Hall Name</th>
+        <th>Seat Number</th>
+        <th>Exam Name</th>
+        <th>Actions</th>
+
+    </tr>
+
+    </thead>
+
+    <tbody>
+
+    <tr th:each="a : ${allocations}">
+
+        <!-- NORMAL ROW -->
+
+        <th:block th:if="${a.id != editAllocation?.id}">
+
+            <td th:text="${a.id}"></td>
+
+            <td th:text="${a.studentName}"></td>
+
+            <td th:text="${a.hallName}"></td>
+
+            <td th:text="${a.seatNumber}"></td>
+
+            <td th:text="${a.examName}"></td>
+
+            <td>
+
+                <a th:href="@{/seat-allocation/edit/{id}(id=${a.id})}">
+
+                    <button type="button"
+                            class="edit-btn">
+
+                        Edit
+
+                    </button>
+
+                </a>
+
+                <a th:href="@{/seat-allocation/delete/{id}(id=${a.id})}"
+                   onclick="return confirm('Delete this allocation?')">
+
+                    <button type="button"
+                            class="delete-btn">
+
+                        Delete
+
+                    </button>
+
+                </a>
+
+            </td>
+
+        </th:block>
+
+        <!-- EDIT ROW -->
+
+        <th:block th:if="${a.id == editAllocation?.id}">
+
+            <td th:text="${a.id}"></td>
+
+            <td>
+                <input class="edit-input"
+                       type="text"
+                       name="studentName"
+                       th:value="${a.studentName}"
+                       form="editForm"
+                       required />
+            </td>
+
+            <td>
+                <input class="edit-input"
+                       type="text"
+                       name="hallName"
+                       th:value="${a.hallName}"
+                       form="editForm"
+                       required />
+            </td>
+
+            <td>
+                <input class="edit-input"
+                       type="number"
+                       name="seatNumber"
+                       th:value="${a.seatNumber}"
+                       form="editForm"
+                       required />
+            </td>
+
+            <td>
+                <input class="edit-input"
+                       type="text"
+                       name="examName"
+                       th:value="${a.examName}"
+                       form="editForm"
+                       required />
+            </td>
+
+            <td>
+
+                <button type="submit"
+                        form="editForm"
+                        class="save-btn">
+
+                    Update
+
+                </button>
+
+                <a th:href="@{/seat-allocation}">
+
+                    <button type="button"
+                            class="cancel-btn">
+
+                        Cancel
+
+                    </button>
+
+                </a>
+
+            </td>
+
+        </th:block>
+
+    </tr>
+
+    </tbody>
+
+</table>
+
+<!-- EDIT FORM -->
+
+<form id="editForm"
+      th:action="@{/seat-allocation/update}"
+      method="post"
+      th:if="${editAllocation != null}">
+
+    <input type="hidden"
+           name="id"
+           th:value="${editAllocation.id}" />
+
+</form>
+
+<!-- SEARCH SCRIPT -->
+
+<script>
+
+    function searchTable() {
+
+        const input =
+            document.getElementById('searchInput')
+                    .value
+                    .toLowerCase();
+
+        const rows =
+            document.querySelectorAll(
+                '#allocationTable tbody tr');
+
+        rows.forEach(row => {
+
+            row.style.display =
+                row.innerText.toLowerCase()
+                    .includes(input)
+                    ? ''
+                    : 'none';
+
+        });
+    }
+
+</script>
+
+</body>
+</html>

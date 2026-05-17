@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Halls</title>
+    <style>
+        body { font-family: Arial; background:#0f172a; color:white; padding:20px; }
+        .top-bar { margin-bottom:20px; }
+        button { padding:10px 20px; margin-right:10px; border:none; border-radius:5px; cursor:pointer; }
+        input { padding:10px; margin:5px; }
+        table { width:100%; border-collapse:collapse; margin-top:20px; }
+        table, th, td { border:1px solid white; }
+        th, td { padding:10px; text-align:center; }
+        .edit-input { padding:6px; width:120px; background:#1e293b; color:white; border:1px solid #60a5fa; border-radius:4px; }
+        .error { background:#7f1d1d; color:#fca5a5; padding:10px 16px; border-radius:6px; margin-bottom:15px; font-size:14px; }
+    </style>
+</head>
+<body>
+
+<h1>Halls Management</h1>
+
+<div class="error" th:if="${error}" th:text="${error}"></div>
+
+<div class="top-bar">
+    <input type="text" id="searchInput" placeholder="Search..." onkeyup="searchTable()" />
+</div>
+
+<form th:action="@{/halls/add}" method="post">
+    <input type="text" name="hallName" placeholder="Hall Name" required>
+    <input type="number" name="capacity" placeholder="Capacity" required>
+    <button type="submit">Save Hall</button>
+</form>
+
+<table id="hallTable">
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>Hall Name</th>
+        <th>Capacity</th>
+        <th>Actions</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="hall : ${halls}">
+
+        <th:block th:if="${hall.id != editHall?.id}">
+            <td th:text="${hall.id}"></td>
+            <td th:text="${hall.hallName}"></td>
+            <td th:text="${hall.capacity}"></td>
+            <td>
+                <a th:href="@{/halls/edit/{id}(id=${hall.id})}">
+                    <button>Edit</button>
+                </a>
+                <a th:href="@{/halls/delete/{id}(id=${hall.id})}"
+                   onclick="return confirm('Delete?')">
+                    <button>Delete</button>
+                </a>
+            </td>
+        </th:block>
+
+        <th:block th:if="${hall.id == editHall?.id}">
+            <td th:text="${hall.id}"></td>
+            <td><input class="edit-input" type="text" name="hallName" th:value="${hall.hallName}" form="editForm" required /></td>
+            <td><input class="edit-input" type="number" name="capacity" th:value="${hall.capacity}" form="editForm" required /></td>
+            <td>
+                <button type="submit" form="editForm">Update</button>
+                <a th:href="@{/halls}"><button type="button">Cancel</button></a>
+            </td>
+        </th:block>
+
+    </tr>
+    </tbody>
+</table>
+
+<form id="editForm"
+      th:action="@{/halls/update}"
+      method="post"
+      th:if="${editHall != null}">
+    <input type="hidden" name="id" th:value="${editHall?.id}" />
+</form>
+
+<script>
+    function searchTable() {
+        const input = document.getElementById('searchInput').value.toLowerCase();
+        const rows = document.querySelectorAll('#hallTable tbody tr');
+        rows.forEach(row => {
+            row.style.display = row.innerText.toLowerCase().includes(input) ? '' : 'none';
+        });
+    }
+</script>
+
+</body>
+</html>
