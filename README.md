@@ -31,7 +31,6 @@ It reduces manual work, avoids errors, and generates reports automatically.
 
 ### Student Module
 - Student Login
-- View Hall Ticket
 - View Seat Allocation
 - View Exam Details
 
